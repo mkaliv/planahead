@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chatbot</title>
+  <link rel="icon" href="logo.png" type="image/jpg">
+  <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+  body {
+    font-family: 'Bitter', sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #d7f3ff; /* Light blue */
+  }
+
+
+    #chatbox {
+      width: 800px;
+      height: 100vh;
+      overflow: hidden;
+      background-color: transparent;
+      display: flex;
+      flex-direction: column;
+      z-index: 1; 
+      
+    }
+
+    #chatbox-header {
+      display: flex;
+      flex-direction: column; 
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px;
+    }
+
+  
+
+    #chatbot-avatar {
+      width: 57px;
+      height: 57px;
+      border-radius: 50%;
+      margin-right: 15px;
+    }
+
+    #reload-button {
+      padding: 10px;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      background: url('reload_button.png') no-repeat center center;
+      background-size: cover;
+      outline: none;
+      width: 35px;
+      height: 35px;
+      margin-left: auto;
+    }
+    #reload-button:hover {
+      text-decoration: underline;
+    }
+    #messages {
+      flex: 1;
+      padding: 17px;
+      overflow-y: auto;
+    }
+    #messages::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    #messages::-webkit-scrollbar-thumb {
+      background-color: transparent; 
+      border-radius: 5px;
+    }
+
+    #messages::-webkit-scrollbar-track {
+      background-color: transparent; 
+    
+    }
+
+    #messages::-webkit-scrollbar-thumb:hover {
+      background-color: transparent;  
+    }
+
+    #messages::-webkit-scrollbar-corner {
+      background-color: transparent; 
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .message {
+      margin-bottom: 10px;
+      font-size: 17px;
+      word-wrap: break-word;
+      border-radius: 5px;
+      padding: 8px;
+      width: fit-content; 
+      max-width: 70%; 
+      animation: fadeIn 0.5s ease-out; 
+      position: relative;
+    }
+
+    .user-message {
+      background-color: whitesmoke;
+      color: #101518;
+      align-self: flex-end;
+      margin-left: auto;
+      border-top-right-radius: 0px;
+      font-size: 20px;
+    }
+
+    .user-message::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0; 
+      width: 0;
+      height: 0;
+      border-style: solid;
+      border-width: 0 10px 10px 0; 
+      border-color: transparent #000000 transparent transparent;
+      margin-top: -8px;
+      transform: rotate(90deg);
+    }
+
+    .bot-message {
+      background-color: #009bda;
+      color: black;
+      align-self: flex-start;
+      margin-right: auto;
+      border-bottom-left-radius: 0px;
+      font-size: 20px;
+    }
+
+    .bot-message::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 0;
+      border-style: solid;
+      border-width: 0 10px 10px 0; 
+      border-color: transparent #333a41 transparent transparent;
+      margin-bottom: -8px; 
+      transform: rotate(270deg); 
+    }
+
+    @keyframes dotLoader {
+      0%, 20% {
+        height: 0;
+        margin-top: 8px;
+        margin-bottom: 8px;
+      }
+
+      40%, 60% {
+        height: 16px;
+        margin-top: 0;
+        margin-bottom: 0;
+      }
+
+      80%, 100% {
+        height: 0;
+        margin-top: 8px;
+        margin-bottom: 8px;
+      }
+    }
+
+    #input-container {
+      display: flex;
+      padding: 10px;
+    }
+
+    #input-wrapper {
+      position: relative;
+      flex: 1;
+      display: flex;
+      border: 1px solid rgb(252, 252, 252);
+      border-radius: 23px;
+      background-color: #101518;
+    }
+
+    #input-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #f8f8f8; 
+    padding: 5px;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 600px;
+    margin: auto;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); 
+    overflow: hidden; /* Prevents extra background */
+}
+
+#input-text {
+    flex: 1; /* Allows input to take available space */
+    padding: 8px;
+    font-size: 18px;
+    border: none;
+    border-radius: 5px;
+    outline: none;
+    background-color: #f8f8f8; 
+    color: #333;
+}
+
+#send-button {
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    background: url('logo.png') no-repeat center center;
+    background-size: cover;
+    outline: none;
+    width: 40px;
+    height: 40px;
+    box-shadow: 0 0 8px rgba(27, 71, 146, 0.6);
+    transition: box-shadow 0.3s ease-in-out;
+    background-color: transparent !important; /* Fix for black background */
+}
+
+#send-button:hover {
+    box-shadow: 0 0 12px rgba(27, 71, 146, 0.9);
+}
+
+    .loading-dots {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 30px;
+    }
+
+    .dot {
+      display: inline-block;
+      height: 16px;
+      width: 16px;
+      background-color: rgb(0, 0, 0);
+      border-radius: 50%;
+      margin: 0 4px;
+      animation: dotLoader 1.1s infinite;
+    }
+    .user-avatar {
+      display: block;
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      margin: -6px 1px 5px;
+    }
+    .bot-avatar {
+      display: block;
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      margin: -6px 1px 5px;
+    }
+
+    
+    #chatbot-info-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      margin: 10px;
+      text-align: left;
+    }
+
+    .avatar-container {
+      display: flex;
+      align-items: center;
+    }
+
+    #chatbot-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      margin-right: 5px;
+    }
+
+    #chatbot-name {
+    font-weight: bold;
+    font-size: 35px;
+    background: linear-gradient(to right, #003366, #0055aa); /* Dark blue */
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent; /* Ensures fallback */
+    text-shadow: 0 0 10px rgba(0, 51, 102, 0.5);
+    }
+
+
+    
+
+    @media only screen and (max-width: 768px) {
+      #chatbox-header {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px;
+      }
+
+      #chatbot-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        margin-right: 15px;
+      }
+
+      #chatbot-name {
+        font-weight: bold;
+        font-size: 24px;
+        color: rgb(252, 252, 252);
+        margin-right: 20px; /* Adjust the margin-right as needed */
+      }
+
+  
+      #messages {
+        max-width: 100%;
+        overflow-y: auto;
+        margin-bottom: 45px;
+      }
+
+      .message {
+        max-width: 100%;
+      }
+
+      #input-container {
+        position: fixed;
+        bottom: 0;
+        width:100%;
+        z-index: 2;
+        padding: 8px 0px;
+        display: flex;
+        justify-content: space-between;
+       
+      }
+
+        #input-text {
+          margin-bottom: 0;
+          border-radius: 20;
+        }
+
+        #send-button {
+          margin-left: 0;
+        }
+    }
+
+
+  </style>
+</head>
+<body>
+  <div id="chatbot-info-container">
+    <div class="avatar-container">
+      <img id="chatbot-avatar" src="logo.png" alt="Chatbot Avatar">
+      <div>
+        <div id="chatbot-name">Chat</div>
+      </div>
+    </div>
+  </div>
+  <div id="chatbox">
+    <div id="chatbox-header" style="display: flex; flex-direction: row; align-items: center; justify-content: space-between;">
+      
+      <button id="reload-button"></button>
+    </div>      
+    <div id="messages"></div>
+    <div id="input-container">
+      <div id="input-wrapper">
+        <input type="text" id="input-text" placeholder="Enter something here">
+
+    </div>
+    <button id="send-button"></button>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const urlParams = new URLSearchParams(window.location.search);
+      var chatbot_id = urlParams.get('id');
+      if (!chatbot_id) {
+         chatbot_id = "chat"; 
+      } 
+      const messagesContainer = document.getElementById('messages');
+      const inputText = document.getElementById('input-text');
+      const sendButton = document.getElementById('send-button');
+      const uploadButton = document.getElementById('upload-button'); 
+      const initialMessage= "👋 Hi there! Welcome to PLAN AHEAD. I'm here to help with any questions about our services or your account. How can I assist you today?";
+      if(isConversationHistoryEmpty() == 0){
+        appendMessage(initialMessage, 'bot-message', 'chatbot_dp');    
+        saveConversationToLocalStorage([
+            ...loadConversationFromLocalStorage(),
+            { role: 'assistant', content: initialMessage }
+        ]);
+      }
+      else{
+        const conversation = loadConversationFromLocalStorage();
+        conversation.forEach((message) => {
+            const { role, content } = message;
+            if (role === 'user') {
+              appendMessage(content, 'user-message', 'user_dp');
+            } else {
+              appendMessage(content, 'bot-message', 'chatbot_dp');
+            }
+        });
+      }
+      var user_id = getCookie('user_id');
+      if (!user_id){
+         const length = 10;
+         const characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+
+         let randomString = '';
+         for (let i = 0; i < length; i++) {
+              const randomIndex = Math.floor(Math.random() * characters.length);
+              randomString += characters.charAt(randomIndex);
+          }
+
+        user_id = randomString;
+        setCookie("user_id",user_id,1);
+      }
+      
+      let isSending = false;
+
+      sendButton.addEventListener('click', sendMessage);
+      inputText.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter') {
+          sendMessage();
+        }
+      });
+      const reloadButton = document.getElementById('reload-button');
+        reloadButton.addEventListener('click', function () {
+          deleteConversationFromLocalStorage();
+          location.reload();
+      });
+
+// ################ CONVERSATION HISTORY ###################
+    function saveConversationToLocalStorage(conversation) {
+        localStorage.setItem(`${chatbot_id}_Conversation`, JSON.stringify(conversation));
+    }
+    function isConversationHistoryEmpty() {
+        const conversation = loadConversationFromLocalStorage();
+        return conversation.length;
+    } 
+    function loadConversationFromLocalStorage() {
+        const conversation = JSON.parse(localStorage.getItem(`${chatbot_id}_Conversation`));
+        if (conversation && conversation.length > 0) {  
+          return conversation;
+        }
+        return [];
+    }
+    function deleteConversationFromLocalStorage() {
+        localStorage.removeItem(`${chatbot_id}_Conversation`);
+        
+    }
+    function getCookie(name) {
+            var cookieName = name + '=';
+            var cookies = document.cookie.split(';');
+
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i].trim();
+
+                if (cookie.indexOf(cookieName) === 0) {
+                    return decodeURIComponent(cookie.substring(cookieName.length));
+                }
+            }
+
+            return false;
+        }
+
+    function setCookie(name, value, daysToExpire, path = '/', domain = '') {
+        var cookieString = name + '=' + encodeURIComponent(value);
+
+        if (daysToExpire) {
+            var expirationDate = new Date();
+            expirationDate.setDate(expirationDate.getDate() + daysToExpire);
+            cookieString += '; expires=' + expirationDate.toUTCString();
+        }
+
+        if (path) {
+            cookieString += '; path=' + path;
+        }
+
+        if (domain) {
+            cookieString += '; domain=' + domain;
+        }
+
+        document.cookie = cookieString;
+    }
+    function expireCookie(name, path = '/', domain = '') {
+        document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=' + path + '; domain=' + domain;
+    }
+    // ################ CONVERSATION HiStory ###################
+    function sendMessage() {
+      if (isSending) return;
+
+      const userMessage = inputText.value;
+      if (userMessage.trim() === '') return;
+
+      
+      isSending = true;
+      sendButton.disabled = true;
+
+      appendMessage(userMessage, 'user-message', 'user_dp');
+      inputText.value = '';
+      appendMessage(
+        '<div class="loading-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>',
+        'loading-message',
+        'chatbot_dp'
+      );
+
+      getChatbotResponse(userMessage)
+          .then(response => {
+            removeLoadingMessage();
+            appendMessage(response, 'bot-message', 'chatbot_dp');
+            isSending = false;
+            sendButton.disabled = false;
+            if(response != "Something went wrong"){
+              saveConversationToLocalStorage([
+              ...loadConversationFromLocalStorage(),
+              { role: 'user', content: userMessage }
+              ]);
+              saveConversationToLocalStorage([
+                ...loadConversationFromLocalStorage(),
+                { role: 'assistant', content: response}
+              ]);
+            }
+            
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            removeLoadingMessage();
+            isSending = false;
+            sendButton.disabled = false;
+        });
+    }
+    function convertTextToLinks(text, linkColor) {
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+        const linkedText = text.replace(urlRegex, (url) => {
+          return `<a href="${url}" target="_blank" style="color: ${linkColor}">${url}</a>`;
+        });
+
+        return linkedText;
+      }
+
+
+  
+      function appendMessage(message, className, sender) {
+        const messageElement = document.createElement('div');
+        messageElement.innerHTML = convertTextToLinks(message,'yellow');
+        messageElement.classList.add('message', className);
+  
+        const avatarElement = document.createElement('img');
+        avatarElement.classList.add(className === 'user-message' ? 'user-avatar' : 'bot-avatar');
+        avatarElement.src = sender === 'user_dp' ? 'user_avatar.jpg' : 'logo.png';
+  
+        const avatarContainer = document.createElement('div');
+        avatarContainer.classList.add('avatar-container');
+        avatarContainer.appendChild(avatarElement);
+  
+        if (className === 'user-message') {
+          avatarContainer.style.justifyContent = 'flex-end';
+          messagesContainer.appendChild(avatarContainer);
+          messagesContainer.appendChild(messageElement);
+        } else if (className === 'bot-message') {
+          avatarContainer.style.justifyContent = 'flex-start';
+          messagesContainer.appendChild(messageElement);
+          messagesContainer.appendChild(avatarContainer);
+        }else if (className === 'loading-message') {
+          messagesContainer.appendChild(messageElement);
+    
+        }
+    
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      }
+  
+      function removeLoadingMessage() {
+        const loadingMessage = document.querySelector('.loading-message');
+        if (loadingMessage) {
+          loadingMessage.remove();
+        }
+      }
+  
+      function getChatbotResponse(userMessage) {
+            previous_history = loadConversationFromLocalStorage();
+
+            const apiUrl = 'http://127.0.0.1:8000';
+
+            const requestData = {
+                user_id: user_id,
+                query: userMessage
+            };
+
+            return fetch(`${apiUrl}/chat`, {
+                method: 'POST',
+                headers: {
+                    'accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'x-api-key': '_G63Wz87z8_LFLjxP3JnnA'
+                },
+                body: JSON.stringify(requestData)
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data.Error) {
+                  console.log('Error while generating answer. Check logs for details.');
+                  return 'Something went wrong';
+              }
+
+              const chatbotAnswer = data.answer;
+
+              return chatbotAnswer;
+          })
+          .catch(error => {
+              console.log('There was an error while calling the API.', error);
+              return 'Something went wrong';
+          });
+        }
+
+
+      });
+          
+  </script>
+</body>
+</html>
