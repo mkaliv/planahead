@@ -351,14 +351,6 @@
 
 
 
-    @media screen and (max-width: 480px) {
-            body {
-                width: 350px;
-                background-color: red;
-            }
-        }
-
-
   </style>
 </head>
 <body>
@@ -395,7 +387,7 @@
       const inputText = document.getElementById('input-text');
       const sendButton = document.getElementById('send-button');
       const uploadButton = document.getElementById('upload-button'); 
-      const initialMessage= "👋 Hi there! Welcome to PLAN AHEAD. I'm here to help with any questions about our services or your account. How can I assist you today?";
+      const initialMessage= "👋  Γειά σας! Καλώς ήρθατε στην planahead. Είμαι εδώ για να βοηθήσω σε οποιαδήποτε ερώτηση σας για τις υπηρεσίες μας ή την υπόθεση σας. Πως μπορώ να φανώ χρήσιμος;";
       if(isConversationHistoryEmpty() == 0){
         appendMessage(initialMessage, 'bot-message', 'chatbot_dp');    
         saveConversationToLocalStorage([
